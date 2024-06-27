@@ -21,8 +21,7 @@ services:
     ports:
       - "8080:8080"
     volumes:
-      - ./dags:/opt/airflow/dags
-      - D:/airflow_docker_project_coba3/lively-clover-427610-g9-9d6cb2b4f640.json:/opt/airflow/service-account-key.json
+      - ./dags:/opt/airflow/dags      
     depends_on:
       - postgres
     command: >
@@ -39,8 +38,7 @@ services:
       AIRFLOW__CORE__FERNET_KEY: DbFbASoM6eg8YmAkGpIuG0LVdxuFXqFdJxbDUwqAltk=   
       AIRFLOW__CORE__LOAD_EXAMPLES: "false"
     volumes:
-      - ./dags:/opt/airflow/dags
-      - D:/airflow_docker_project_coba3/lively-clover-427610-g9-9d6cb2b4f640.json:/opt/airflow/service-account-key.json
+      - ./dags:/opt/airflow/dags      
     depends_on:
       - webserver
     command: bash -c "pip install apache-airflow[postgres,google] && airflow scheduler"
