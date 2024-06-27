@@ -1,0 +1,50 @@
+version: '3.7'
+services:
+  postgres:
+    image: postgres:latest
+    environment:
+      POSTGRES_USER: postgres
+      POSTGRES_PASSWORD: admin
+      POSTGRES_DB: project_airflow_docker
+    ports:
+      - "5432:5432"
+    volumes:
+      - postgres_data:/var/lib/postgresql/data
+
+  webserver:
+    image: apache/airflow:latest
+    environment:
+      AIRFLOW__CORE__EXECUTOR: LocalExecutor
+      AIRFLOW__CORE__SQL_ALCHEMY_CONN: postgresql+psycopg2://postgres:admin@postgres/project_airflow_docker 
+      AIRFLOW__CORE__FERNET_KEY: DbFbASoM6eg8YmAkGpIuG0LVdxuFXqFdJxbDUwqAltk=   
+      AIRFLOW__CORE__LOAD_EXAMPLES: "false"
+    ports:
+      - "8080:8080"
+    volumes:
+      - ./dags:/opt/airflow/dags
+      - D:/airflow_docker_project_coba3/lively-clover-427610-g9-9d6cb2b4f640.json:/opt/airflow/service-account-key.json
+    depends_on:
+      - postgres
+    command: >
+      bash -c "pip install apache-airflow[postgres,google] &&
+               airflow db upgrade &&
+               airflow users create --username admin --password admin --firstname Admin --lastname User --role Admin --email admin@example.com &&
+               airflow webserver"
+
+  scheduler:
+    image: apache/airflow:latest
+    environment:
+      AIRFLOW__CORE__EXECUTOR: LocalExecutor
+      AIRFLOW__CORE__SQL_ALCHEMY_CONN: postgresql+psycopg2://postgres:admin@postgres/project_airflow_docker   
+      AIRFLOW__CORE__FERNET_KEY: DbFbASoM6eg8YmAkGpIuG0LVdxuFXqFdJxbDUwqAltk=   
+      AIRFLOW__CORE__LOAD_EXAMPLES: "false"
+    volumes:
+      - ./dags:/opt/airflow/dags
+      - D:/airflow_docker_project_coba3/lively-clover-427610-g9-9d6cb2b4f640.json:/opt/airflow/service-account-key.json
+    depends_on:
+      - webserver
+    command: bash -c "pip install apache-airflow[postgres,google] && airflow scheduler"
+
+volumes:
+  postgres_data:
+
